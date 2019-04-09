@@ -5,7 +5,7 @@
 // Programme of Study   Computing
 //
 
-//This class is used to produce objects of type ITEM, these objects hold details about the quakes
+//This class is used to produce objects of type ITEM, these objects hold details about the quakes after they are parsed
 
 package com.example.recycler;
 

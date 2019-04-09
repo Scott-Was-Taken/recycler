@@ -1,3 +1,10 @@
+
+//
+// Name                 Scott Thompson
+// Student ID           S1507806
+// Programme of Study   Computing
+//
+
 package com.example.recycler;
 
 import android.support.v7.app.AppCompatActivity;
@@ -29,8 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ExampleAdapter adapter;
-    private List<ExampleItem> exampleList;
+    private Adapter adapter;
+    private List<RecyclerItem> exampleList;
     private String result;
     private String url1 = "";
     private String urlSource = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
@@ -224,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         //for each item in the list
         for(int i=0; i<quakes.size(); i++) {
             //add it to the adapter
-            exampleList.add(new ExampleItem(R.drawable.ic_android, quakes.get(i).getTitle(),quakes.get(i).getDescription()));
+            exampleList.add(new RecyclerItem(R.drawable.ic_android, quakes.get(i).getTitle(),quakes.get(i).getDescription()));
         }
     }
     //set up the recycler
@@ -232,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new ExampleAdapter(exampleList);
+        adapter = new Adapter(exampleList);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -241,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.example_menu, menu);
+        inflater.inflate(R.menu.search_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();

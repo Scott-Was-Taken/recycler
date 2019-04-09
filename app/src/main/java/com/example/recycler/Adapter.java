@@ -1,3 +1,11 @@
+//
+// Name                 Scott Thompson
+// Student ID           S1507806
+// Programme of Study   Computing
+//
+//this class is used as an adapter for performance as loading directly onto the screen causes performance issues
+//for a large dataset. Since the dataset is a reasonable size and the data is also pulled from a dynamic web source
+//it is important to ensure that the application is able to pass unpredictable data to the recycler without lagging/crashing.
 package com.example.recycler;
 
 import android.support.annotation.NonNull;
@@ -13,9 +21,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleViewHolder> implements Filterable {
-    private List<ExampleItem> exampleList;
-    private List<ExampleItem> exampleListFull;
+public class Adapter extends RecyclerView.Adapter<Adapter.ExampleViewHolder> implements Filterable {
+    private List<RecyclerItem> exampleList;
+    private List<RecyclerItem> exampleListFull;
 
     class ExampleViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -30,7 +38,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
         }
     }
     //pass the arraylist of items
-    ExampleAdapter(List<ExampleItem> exampleList) {
+    Adapter(List<RecyclerItem> exampleList) {
         //instantiate the variable
         this.exampleList = exampleList;
         exampleListFull = new ArrayList<>(exampleList);
@@ -39,7 +47,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
     @NonNull
     @Override
     public ExampleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.example_item,
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item,
                 parent, false);
         //create a view holder
         return new ExampleViewHolder(v);
@@ -48,7 +56,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
     @Override
     public void onBindViewHolder(@NonNull ExampleViewHolder holder, int position) {
         //create an instance of item
-        ExampleItem currentItem = exampleList.get(position);
+        RecyclerItem currentItem = exampleList.get(position);
         //set the resources
         holder.imageView.setImageResource(currentItem.getImageResource());
         holder.textView1.setText(currentItem.getText1());
@@ -68,14 +76,14 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
     private Filter exampleFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<ExampleItem> filteredList = new ArrayList<>();
+            List<RecyclerItem> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
                 filteredList.addAll(exampleListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (ExampleItem item : exampleListFull) {
+                for (RecyclerItem item : exampleListFull) {
                     if (item.getText2().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
