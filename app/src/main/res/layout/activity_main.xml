@@ -6,8 +6,28 @@
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray"
     tools:context="com.example.recycler.MainActivity">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tools:ignore="MissingConstraints">
 
-    <android.support.v7.widget.RecyclerView
+        <TextView
+            android:id="@+id/salutation"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Scott Thompson S15071245"
+            />
+        <TextView
+            android:id="@+id/acknowledgement"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Contains British Geological Survey materials ©NERC 2019"
+            tools:ignore="MissingConstraints" />
+
+        <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,4 +38,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
