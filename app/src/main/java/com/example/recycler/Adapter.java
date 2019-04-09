@@ -21,16 +21,16 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.ExampleViewHolder> implements Filterable {
-    private List<RecyclerItem> exampleList;
-    private List<RecyclerItem> exampleListFull;
+public class Adapter extends RecyclerView.Adapter<Adapter.RecViewHolder> implements Filterable {
+    private List<RecyclerItem> recList;
+    private List<RecyclerItem> recListFull;
 
-    class ExampleViewHolder extends RecyclerView.ViewHolder {
+    class RecViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView textView1;
         TextView textView2;
 
-        ExampleViewHolder(View itemView) {
+        RecViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view);
             textView1 = itemView.findViewById(R.id.text_view1);
@@ -38,25 +38,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ExampleViewHolder> imp
         }
     }
     //pass the arraylist of items
-    Adapter(List<RecyclerItem> exampleList) {
+    Adapter(List<RecyclerItem> recList) {
         //instantiate the variable
-        this.exampleList = exampleList;
-        exampleListFull = new ArrayList<>(exampleList);
+        this.recList = recList;
+        recListFull = new ArrayList<>(recList);
     }
 
     @NonNull
     @Override
-    public ExampleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item,
                 parent, false);
         //create a view holder
-        return new ExampleViewHolder(v);
+        return new RecViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExampleViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecViewHolder holder, int position) {
         //create an instance of item
-        RecyclerItem currentItem = exampleList.get(position);
+        RecyclerItem currentItem = recList.get(position);
         //set the resources
         holder.imageView.setImageResource(currentItem.getImageResource());
         holder.textView1.setText(currentItem.getText1());
@@ -65,25 +65,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ExampleViewHolder> imp
     //get the amount of items
     @Override
     public int getItemCount() {
-        return exampleList.size();
+        return recList.size();
     }
 
     @Override
     public Filter getFilter() {
-        return exampleFilter;
+        return recFilter;
     }
 
-    private Filter exampleFilter = new Filter() {
+    private Filter recFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<RecyclerItem> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(exampleListFull);
+                filteredList.addAll(recListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (RecyclerItem item : exampleListFull) {
+                for (RecyclerItem item : recListFull) {
                     if (item.getText2().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
@@ -98,8 +98,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ExampleViewHolder> imp
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            exampleList.clear();
-            exampleList.addAll((List) results.values);
+            recList.clear();
+            recList.addAll((List) results.values);
             notifyDataSetChanged();
         }
     };

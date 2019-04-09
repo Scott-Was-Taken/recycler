@@ -10,7 +10,7 @@
 package com.example.recycler;
 
 public class Item {
-    private String title;
+    private Title title;
     private String description;
     private String link;
     private String pubDate;
@@ -18,11 +18,11 @@ public class Item {
     private String lat;
     private String lon;
 
-    public String getTitle() {
+    public Title getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(Title title) {
         this.title = title;
     }
 

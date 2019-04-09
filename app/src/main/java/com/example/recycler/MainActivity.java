@@ -33,6 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -191,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
                     else if (currentItem != null) {
                         //check the element name and set any matches to the currentItem object
                         if ("title".equals(eltName)) {
-                            currentItem.setTitle(parser.nextText());
-                            Log.i("title", currentItem.getTitle());
+                            currentItem.setTitle(parseTitle(parser.nextText()));
+                            Log.i("title", currentItem.getTitle().getTitle());
                         } else if ("description".equals(eltName)) {
                             currentItem.setDescription(parser.nextText());
                             Log.i("desc", currentItem.getDescription());
@@ -221,6 +222,74 @@ public class MainActivity extends AppCompatActivity {
         //now that we have an arraylist of items, pass them to a print function
         return items;
     }
+
+    //method to parse the title field of the xml tag and return a title object
+    private Title parseTitle(String unParsed){
+        //create a new title object
+        Title title= new Title();
+        //split the string at colon to remove the "UK Earthquake alert" and grab the magnitude
+        String[] splitter = unParsed.split(":");
+        //the magnitude section of the string is at splitter 1
+        String mag=splitter[1];
+        double parsedMag=parseMag(mag);
+        //the location/datetime section of the string is at splitter 2
+        String locdate=splitter[2];
+        Log.i("location and date ",locdate);
+        String parsedLoc=parseLocation(locdate);
+        String parsedDate=parseDate(locdate);
+
+
+
+        title.setTitle("UK Earthquake");
+        title.setMagnitude(parsedMag);
+        title.setLocation(parsedLoc);
+        title.setDate(parsedDate);
+        return title;
+    }
+    //method to parse a magnitude string from the XML file
+    private double parseMag(String mag){
+        mag = mag.replaceAll("[^\\.0123456789]","");
+        Double numericMag=Double.parseDouble(mag);
+        Log.i("magnitude",String.valueOf(numericMag));
+        return numericMag;
+    }
+    //a method to parse the location out of the location and date portion of title
+    private String parseLocation(String locString){
+        //delimit using commas
+        String[] splitter = locString.split(",");
+        //since the last two values of the array are the date which we dont want, we can simply replace them with empty strings
+        int lengthArray=splitter.length-1;
+        splitter[lengthArray]="";
+        splitter[lengthArray-1]="";
+        String location= Arrays.toString(splitter);
+        location=location.replace("[","");
+        location=location.replace("]","");
+        location=location.replace(",","");
+        location=location.trim();
+        location=location.replace(" ",", ");
+        Log.i("location",location);
+        return location;
+    }
+    //method to pull a date string out of the location and date portion of the title
+    private String parseDate(String dateString){
+        //delimit using commas
+        String[] splitter = dateString.split(",");
+        //since the last two values of the array are the date, we can simply take them into a new string
+        int lengthArray=splitter.length-1;
+        //day and day2 are the last two delimited parts of the array we want to keep and make a string out of
+        String day2=splitter[lengthArray];
+        day2 = day2.substring(0, day2.length() - 2);
+
+        String day=splitter[lengthArray-1];
+        String date=day + day2;
+
+        Log.i("date",date);
+        return date;
+    }
+
+    private Description parseDesc(String unParsed){
+        return null;
+    }
     //method to fill the arraylist with the items
     private void fillExampleList(ArrayList<Item> quakes) {
         exampleList = new ArrayList<>();
@@ -231,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
         //for each item in the list
         for(int i=0; i<quakes.size(); i++) {
             //add it to the adapter
-            exampleList.add(new RecyclerItem(R.drawable.ic_android, quakes.get(i).getTitle(),quakes.get(i).getDescription()));
+            exampleList.add(new RecyclerItem(R.drawable.ic_android, quakes.get(i).getTitle().getTitle(),quakes.get(i).getDescription()));
         }
     }
     //set up the recycler
