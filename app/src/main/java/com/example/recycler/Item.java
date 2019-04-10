@@ -11,7 +11,7 @@ package com.example.recycler;
 
 public class Item {
     private Title title;
-    private String description;
+    private Description description;
     private String link;
     private String pubDate;
     private String category;
@@ -26,11 +26,11 @@ public class Item {
         this.title = title;
     }
 
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Description description) {
         this.description = description;
     }
 

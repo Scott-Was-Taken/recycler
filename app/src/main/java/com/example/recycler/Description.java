@@ -10,6 +10,17 @@ package com.example.recycler;
 public class Description {
     private int depth;
     private double lat;
+    private double lon;
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    private String dateTime;
 
     public int getDepth() {
         return depth;
@@ -35,6 +46,5 @@ public class Description {
         this.lon = lon;
     }
 
-    private double lon;
 
 }

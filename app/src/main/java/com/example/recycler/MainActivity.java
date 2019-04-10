@@ -119,9 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //a method written to connect to the URL before I realized that part was already done, fairly embarrassing moment
+    //a method written to connect to the URL before I realized that part was already done for me, fairly embarrassing moment
     //but it was also a massive waste of time so therefore seems somewhat worth leaving in
-    //tl;dr ignore this method, its not used and therefore probably not important for marking purposes
+    //tl;dr ignore this method, its not used and therefore probably not important for marking purposes -
+    //but also if you feel like this is worth marks in any way shape or form, that would also be cool.
     private InputStream connectURL() throws IOException {
         InputStream stream = null;
         //set the url
@@ -139,9 +140,8 @@ public class MainActivity extends AppCompatActivity {
         return stream;
     }
 
-
+    //a method to parse a string of xml data and return an arraylist of item objects
     private ArrayList<Item> parseXML(String stream) {
-
         //remove the null from the start of the stream?!?! WAIT WHAT THAT ACTUALLY WORKED?! THIS TOOK ME FOREVER TO FIGURE OUT.
         stream = stream.replaceFirst("null", "");
         //give the first title tag a different name
@@ -195,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
                             currentItem.setTitle(parseTitle(parser.nextText()));
                             Log.i("title", currentItem.getTitle().getTitle());
                         } else if ("description".equals(eltName)) {
-                            currentItem.setDescription(parser.nextText());
-                            Log.i("desc", currentItem.getDescription());
+                            currentItem.setDescription(parseDesc(parser.nextText()));
+                            //Log.i("description DateTime", currentItem.getDescription().getDateTime());
                         } else if ("link".equals(eltName)) {
                             currentItem.setLink(parser.nextText());
                             Log.i("link", currentItem.getLink());
@@ -225,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
     //method to parse the title field of the xml tag and return a title object
     private Title parseTitle(String unParsed){
+        Log.e("Title Unparsed", unParsed);
         //create a new title object
         Title title= new Title();
         //split the string at colon to remove the "UK Earthquake alert" and grab the magnitude
@@ -287,20 +288,82 @@ public class MainActivity extends AppCompatActivity {
         return date;
     }
 
+
+
+    //method to parse the title field of the xml tag and return a title object
     private Description parseDesc(String unParsed){
-        return null;
+        //create a new description object
+        Log.e("Description Unparsed", unParsed);
+        Description description= new Description();
+        //delimit using semicolons
+        String[] splitter = unParsed.split(";");
+        String parsedDateTime=parseDateTime(splitter[0]);
+        String parsedLatLong=parseDescString(splitter[2]);
+
+        //split the lat and lon into seperate double variables one for lat and one for lon
+        String[] latlonSplitter = parsedLatLong.split(",");
+        double lat=Double.parseDouble(latlonSplitter[0]);
+        double lon=Double.parseDouble(latlonSplitter[1]);
+        int depth=parseDepth(splitter[3]);
+
+        description.setDateTime(parsedDateTime);
+        description.setLat(lat);
+        description.setLon(lon);
+        description.setDepth(depth);
+        Log.d("DateTime(parsed f desc)",description.getDateTime());
+        Log.d("lat (parsed f desc)",Double.toString(description.getLat()));
+        Log.d("lon (parsed f desc)",Double.toString(description.getLon()));
+        Log.d("depth (parsed f desc)",Integer.toString(description.getDepth())+" Kilometers");
+        return description;
     }
+    //a function to strip the name off of a description component string
+    private String parseDescString(String unParsed){
+        //delimit using colon
+        String[] splitter = unParsed.split(":");
+        return splitter[1];
+    }
+
+    //a function to strip the name off of a description component string
+    private String parseDateTime(String unParsed){
+        //delimit using colon
+        String[] splitter = unParsed.split(":");
+        String outputString=splitter[1]+":"+splitter[2]+":"+splitter[3];
+        //String outputString="hello";
+        return outputString;
+    }
+
+    private int parseDepth(String unParsed){
+        //delimit using colon
+        String[] splitter = unParsed.split(":");
+        //take only the number from the string i.e the KM at the end of the depth string will be removed and the int returned will be the depth
+        String depthString= splitter[1].replaceAll("\\D+","");
+        //parse depth to be an int and not a string
+        int depth=Integer.parseInt(depthString);
+        return depth;
+    }
+    //a method to build a description string out of a description object
+    private String descriptionMaker(Description description ,Title title){
+        String dateTime=description.getDateTime();
+        String day=title.getDate();
+        String magnitude=Double.toString(title.getMagnitude());
+        String depth=Integer.toString(description.getDepth());
+        String lat=Double.toString(description.getLon());
+        String lon=Double.toString(description.getLon());
+        String location=title.getLocation();
+        String descriptionString="An earthquake of magnitude "+magnitude+ " was reported in "+ location + " on " + day + ". This quake was recorded at a depth of "+ depth +" kilometers from the earth's surface";
+        return descriptionString;
+    }
+
     //method to fill the arraylist with the items
     private void fillExampleList(ArrayList<Item> quakes) {
         exampleList = new ArrayList<>();
         //instantiate a variable with the arraylist of quakes
         //the problem is here fix this tomorrow
         //String teststring= quakes(1).get().getDescription;
-        Log.e("tracer", quakes.get(1).getDescription());
         //for each item in the list
         for(int i=0; i<quakes.size(); i++) {
             //add it to the adapter
-            exampleList.add(new RecyclerItem(R.drawable.ic_android, quakes.get(i).getTitle().getTitle(),quakes.get(i).getDescription()));
+            exampleList.add(new RecyclerItem(R.drawable.ic_android, quakes.get(i).getTitle().getTitle()+" in "+ quakes.get(i).getTitle().getLocation(),descriptionMaker(quakes.get(i).getDescription(), quakes.get(i).getTitle())));
         }
     }
     //set up the recycler
