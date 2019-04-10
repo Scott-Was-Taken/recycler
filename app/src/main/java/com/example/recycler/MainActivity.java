@@ -7,8 +7,10 @@
 
 package com.example.recycler;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -16,8 +18,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -42,12 +50,35 @@ public class MainActivity extends AppCompatActivity {
     private String result;
     private String url1 = "";
     private String urlSource = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
-
+    private static final String TAG="MainActivity";
+    private static final int ERROR_DIALOG_REQUEST=9001;
 
     public void startProgress() {
         // Run network access on a separate thread;
         new Thread(new Task(urlSource)).start();
     } //
+
+    public boolean isServicesOK(){
+        Log.d(TAG, "isServicesOK: checking google services version");
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if(available == ConnectionResult.SUCCESS){
+            //google play is working as expected we can make map requests
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
+            return true;
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            //an error occured but it is resolvable by the user.
+            Log.d(TAG, "isServicesOK: an error occured such as a version issue");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }else{
+            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
 
 
     // Need separate thread to access the internet resource over network
@@ -105,6 +136,12 @@ public class MainActivity extends AppCompatActivity {
                     //parse the xml string
                     fillExampleList(parseXML(result));
                     setUpRecyclerView();
+                    //if google services is ok
+                    if(isServicesOK()){
+                        //configure the map button
+                        configureMapButton();
+                    }
+
                     //rawDataDisplay.setText(result);
                 }
             });
@@ -117,6 +154,18 @@ public class MainActivity extends AppCompatActivity {
         startProgress();
         setContentView(R.layout.activity_main);
 
+    }
+
+
+
+    private void configureMapButton(){
+        Button nextButton = (Button) findViewById(R.id.MapButton);
+        nextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,MapActivity.class));
+            }
+        });
     }
 
     //a method written to connect to the URL before I realized that part was already done for me, fairly embarrassing moment
