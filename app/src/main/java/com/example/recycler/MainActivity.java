@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //a method to parse a string of xml data and return an arraylist of item objects
-    private ArrayList<Item> parseXML(String stream) {
+    ArrayList<Item> parseXML(String stream) {
         //remove the null from the start of the stream?!?! WAIT WHAT THAT ACTUALLY WORKED?! THIS TOOK ME FOREVER TO FIGURE OUT.
         stream = stream.replaceFirst("null", "");
         //give the first title tag a different name
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             //we are finished looking here, move the parser forward
             eventType = parser.next();
         }
-        //now that we have an arraylist of items, pass them to a print function
+        //now that we have an arraylist of items, return them
         return items;
     }
 
