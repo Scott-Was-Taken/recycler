@@ -369,7 +369,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return descriptionString;
     }
 
-    //method to fill the arraylist with the markers
+    // the original plan was that this method to fill the arraylist with the markers
+    //since then I decided that I dont need an arraylist of markers because thats a stupid idea, so with that in mind...
+    //this method takes a parsed arraylist of quake objects and dumps a marker on the map for each.j
     private void fillMarkerList(ArrayList<Item> quakes) {
         markerList = new ArrayList<>();
         //instantiate a variable with the arraylist of quakes
@@ -377,7 +379,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //String teststring= quakes(1).get().getDescription;
         //for each item in the list
         for(int i=0; i<quakes.size(); i++) {
-            //add it to markerlist
+            //create a marker
             double lat=quakes.get(i).getDescription().getLat();
             double lng=quakes.get(i).getDescription().getLon();
             LatLng location = new LatLng(lat, lng);
@@ -403,10 +405,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             //UI THREAD FOR MAPACTIVITY
             MapActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
-                    Log.d("UI thread", "I am the UI thread");
-                    //InputStream parseStream = null;
+                    //parse the XML string and drop all the required markers
                     fillMarkerList(parseXML(result));
-
                 }
             });
         }
