@@ -9,6 +9,7 @@ package com.example.recycler;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,13 +33,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +45,7 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
     public void startProgress() {
         // Run network access on a separate thread;
-        new Thread(new MapActivity.Task(urlSource)).start();
+        new Thread(new MapActivity.Task());
     } //
 
     @Override
@@ -65,7 +62,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private String result;
-    private String urlSource = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     double ukLat=55.3781;
     double ukLon=-2.3360;
     LatLng ukLatLon = new LatLng(ukLat, ukLon);
@@ -79,10 +75,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        Intent intent=getIntent();
+        result=intent.getStringExtra(MainActivity.EXTRA_TEXT);
         configureBackButton();
         getLocationPermission();
         initMap();
         startProgress();
+        Log.e("Webdata passed frm main",result);
+        new Thread(new MapActivity.Task()).start();
 
     }
 
@@ -380,8 +381,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             double lat=quakes.get(i).getDescription().getLat();
             double lng=quakes.get(i).getDescription().getLon();
             LatLng location = new LatLng(lat, lng);
-            Log.e("lat for latlng",Double.toString(lat));
-            Log.e("lng for latlng",Double.toString(lng));
             MarkerOptions marker=new MarkerOptions()
                     .position(location)
                     .title("Earthquake in "+quakes.get(i).getTitle().getLocation() )
@@ -397,49 +396,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private class Task implements Runnable {
         private String url;
 
-        public Task(String aurl) {
-            url = aurl;
-        }
+
 
         @Override
         public void run() {
-
-            URL aurl;
-            URLConnection yc;
-            BufferedReader in = null;
-            String inputLine = "";
-
-
-            Log.e("MyTag", "in run");
-
-            try {
-                Log.e("MyTag", "in try");
-                aurl = new URL(url);
-                yc = aurl.openConnection();
-                in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                //
-                // Throw away the first 2 header lines before parsing
-                //
-                //
-                //
-                while ((inputLine = in.readLine()) != null) {
-                    result = result + inputLine;
-                    Log.e("MyTag", inputLine);
-
-                }
-                in.close();
-            } catch (IOException ae) {
-                Log.e("MyTag", "ioexception");
-            }
-
-
             //UI THREAD FOR MAPACTIVITY
             MapActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
                     //InputStream parseStream = null;
-                    //fillMarkerList(parseXML(result));
                     fillMarkerList(parseXML(result));
+
                 }
             });
         }

@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private String urlSource = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private static final String TAG="MainActivity";
     private static final int ERROR_DIALOG_REQUEST=9001;
+    public static final String EXTRA_TEXT="com.example.recycler.EXTRA_TEXT";
 
     public void startProgress() {
         // Run network access on a separate thread;
@@ -159,11 +160,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void configureMapButton(){
+        String text=result;
         Button nextButton = (Button) findViewById(R.id.MapButton);
         nextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,MapActivity.class));
+                Intent intent=new Intent(MainActivity.this, MapActivity.class);
+                intent.putExtra(EXTRA_TEXT,result);
+                startActivity(intent);
             }
         });
     }
