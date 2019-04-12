@@ -1,4 +1,6 @@
 <resources>
     <string name="google_maps_API_key">AIzaSyC6dGbkho1YxQKz8aVfzpqCJpQyA_Iu_8c</string>
     <string name="app_name">recycler</string>
+    <color name="orange">#ffa500</color>
+    <color name="green">#00ff00</color>
 </resources>

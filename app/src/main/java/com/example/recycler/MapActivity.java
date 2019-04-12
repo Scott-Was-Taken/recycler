@@ -26,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -93,7 +94,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mapFragment.getMapAsync(MapActivity.this);
     }
-
+    //a method to get location permission. In this iteration this method is not required and I didnt realize it until I was trying to debug it
+    //since I dont actually use the users location data Im not sure why I bothered with this but I spent quite a lot of time debugging it so here
+    //it stays
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -374,20 +377,46 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //this method takes a parsed arraylist of quake objects and dumps a marker on the map for each.j
     private void fillMarkerList(ArrayList<Item> quakes) {
         markerList = new ArrayList<>();
-        //instantiate a variable with the arraylist of quakes
-        //the problem is here fix this tomorrow
-        //String teststring= quakes(1).get().getDescription;
-        //for each item in the list
+        String Title;
+        int depth;
+        double magnitude;
         for(int i=0; i<quakes.size(); i++) {
-            //create a marker
+            //header of the marker box
+            String header="Earthquake in "+quakes.get(i).getTitle().getLocation();
+            //lat and long of the marker
             double lat=quakes.get(i).getDescription().getLat();
             double lng=quakes.get(i).getDescription().getLon();
             LatLng location = new LatLng(lat, lng);
-            MarkerOptions marker=new MarkerOptions()
-                    .position(location)
-                    .title("Earthquake in "+quakes.get(i).getTitle().getLocation() )
-                    .snippet("Magnitude "+ quakes.get(i).getTitle().getMagnitude()+ " quake "+ quakes.get(i).getDescription().getDepth() + " kilometers below ground");
-            mMap.addMarker(marker);
+            //create a marker
+            depth=quakes.get(i).getDescription().getDepth();
+            magnitude=quakes.get(i).getTitle().getMagnitude();
+
+            if (depth<5){
+                //marker is close to earth surface
+                MarkerOptions marker=new MarkerOptions()
+                        .position(location)
+                        .title(header)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        .snippet("Magnitude "+ quakes.get(i).getTitle().getMagnitude()+ " quake "+ quakes.get(i).getDescription().getDepth() + " kilometers below ground");
+                mMap.addMarker(marker);
+            }
+            else if(magnitude>2){
+                //magnitude is higher than 2
+                MarkerOptions marker=new MarkerOptions()
+                        .position(location)
+                        .title(header)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                        .snippet("Magnitude "+ quakes.get(i).getTitle().getMagnitude()+ " quake "+ quakes.get(i).getDescription().getDepth() + " kilometers below ground");
+                mMap.addMarker(marker);
+
+            }
+            else{
+                MarkerOptions marker=new MarkerOptions()
+                        .position(location)
+                        .title(header)
+                        .snippet("Magnitude "+ magnitude + " quake "+ depth + " kilometers below ground");
+                mMap.addMarker(marker);
+            }
         }
         //set the camera on the UK
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ukLatLon,5));
